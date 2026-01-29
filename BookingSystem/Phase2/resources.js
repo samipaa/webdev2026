@@ -242,4 +242,6 @@ const inputs = [
   [resourceDescInput, isResourceDescValid]
 ]
 
+// todo: validate price, add price and time units
+
 attachInputValidations(inputs);
