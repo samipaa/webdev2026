@@ -33,7 +33,7 @@ async function onSubmit(event) {
     action: actionValue,
     resourceName: $("resourceName")?.value ?? "",
     resourceDescription: $("resourceDescription")?.value ?? "",
-    resourceAvailable: $("resourceAvailable")?.checked ?? "", // checked fix
+    resourceAvailable: $("resourceAvailable")?.value ?? "",
     resourcePrice: $("resourcePrice")?.value ?? "",
     resourcePriceUnit: $("resourcePriceUnit")?.value ?? ""
   };

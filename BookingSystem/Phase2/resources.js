@@ -3,7 +3,6 @@
 // ===============================
 const actions = document.getElementById("resourceActions");
 const resourceNameContainer = document.getElementById("resourceNameContainer");
-const resourceDescContainer = document.getElementById("resourceDescContainer");
 
 // Example roles
 const role = "admin"; // "reserver" | "admin"
@@ -118,27 +117,6 @@ function createResourceNameInput(container) {
   return input;
 }
 
-function createResourceDescInput(container) {
-  const input = document.createElement("input");
-
-  // Core attributes
-  input.id = "resourceDescription";
-  input.name = "resourceDescription";
-  input.type = "text";
-  input.placeholder = "Describe location, capacity, included equipment, or any usage notes…";
-
-  // Base Tailwind styling (single source of truth)
-  input.className = `
-    mt-2 w-full rounded-2xl border border-black/10 bg-white
-    px-4 py-3 text-sm outline-none
-    focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/30
-    transition-all duration-200 ease-out
-  `;
-
-  container.appendChild(input);
-  return input;
-}
-
 function isResourceNameValid(value) {
   const trimmed = value.trim();
 
@@ -146,18 +124,6 @@ function isResourceNameValid(value) {
   const allowedPattern = /^[a-zA-Z0-9äöåÄÖÅ ]+$/;
 
   const lengthValid = trimmed.length >= 5 && trimmed.length <= 30;
-  const charactersValid = allowedPattern.test(trimmed);
-
-  return lengthValid && charactersValid;
-}
-
-function isResourceDescValid(value) {
-  const trimmed = value.trim();
-
-  // Allowed: letters, numbers, Finnish letters, and space (based on your current regex)
-  const allowedPattern = /^[a-zA-Z0-9äöåÄÖÅ ]+$/;
-
-  const lengthValid = trimmed.length >= 10 && trimmed.length <= 50;
   const charactersValid = allowedPattern.test(trimmed);
 
   return lengthValid && charactersValid;
@@ -189,42 +155,25 @@ function setInputVisualState(input, state) {
   }
 }
 
-// i accidentally rm -rf'd my entire vm while working on this.
-// shared clipboard was still working luckily so i could back up my changes
-// before pulling the plug :D
-
-function attachInputValidations(inputs) {
+function attachResourceNameValidation(input) {
   const update = () => {
-    let allValid = true;
+    const raw = input.value;
+    if (raw.trim() === "") {
+      setInputVisualState(input, "neutral");
+      setButtonEnabled(createButton, false);
+      return;
+    }
 
-    // check all inputs
-    inputs.forEach((x) => {
-      const input = x[0];
-      const validator = x[1];
+    const valid = isResourceNameValid(raw);
 
-      const raw = input.value;
-
-      if (raw.trim() === "") {
-        setInputVisualState(input, "neutral");
-        allValid = false;
-        return;
-      }
-
-      const valid = validator(raw);
-
-      if (!valid) {
-        allValid = false;
-      }
-
-      setInputVisualState(input, valid ? "valid" : "invalid");
-    });
-
-    // only enable Create if all inputs are valid
-    setButtonEnabled(createButton, allValid);
+    setInputVisualState(input, valid ? "valid" : "invalid");
+    setButtonEnabled(createButton, valid);
   };
 
-  inputs.forEach((x) => x[0].addEventListener("input", update));
+  // Real-time validation
+  input.addEventListener("input", update);
 
+  // Initialize state on page load (Create disabled until valid)
   update();
 }
 
@@ -235,11 +184,4 @@ renderActionButtons(role);
 
 // Create + validate input
 const resourceNameInput = createResourceNameInput(resourceNameContainer);
-const resourceDescInput = createResourceDescInput(resourceDescContainer);
-
-const inputs = [
-  [resourceNameInput, isResourceNameValid],
-  [resourceDescInput, isResourceDescValid]
-]
-
-attachInputValidations(inputs);
+attachResourceNameValidation(resourceNameInput);
