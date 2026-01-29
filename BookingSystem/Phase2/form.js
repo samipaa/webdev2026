@@ -65,5 +65,6 @@ async function onSubmit(event) {
 
   } catch (err) {
     console.error("POST error:", err);
+    alert(err); // lazy :D
   }
 }
