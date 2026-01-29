@@ -1,4 +1,6 @@
 # js video notes
+#
+
 ## note that most of the stuff taught in the videos were familiar to me from the previous course and hobby work
 
 
