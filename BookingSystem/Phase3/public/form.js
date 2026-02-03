@@ -28,12 +28,16 @@ async function onSubmit(event) {
   const priceRaw = $("resourcePrice")?.value ?? "";
   const resourcePrice = priceRaw === "" ? 0 : Number(priceRaw);
 
+  // fixed resourceName
+  // fixed resourcePriceUnit
+  // fixed resourcePrice
+
   const payload = {
     action: actionValue,
-    resourceName: $("resourceNamee")?.value ?? "",
+    resourceName: $("resourceName")?.value ?? "",
     resourceDescription: $("resourceDescription")?.value ?? "",
     resourceAvailable: $("resourceAvailable")?.checked ?? false,
-    resourcePrice,
+    resourcePrice: resourcePrice,
     resourcePriceUnit: selectedUnit
   };
 
@@ -63,6 +67,7 @@ async function onSubmit(event) {
     msg += "Name ➡️ "+ data.echo.resourceName + "\n";
     msg += "Description ➡️ " + data.echo.resourceDescription + "\n";
     msg += "Availability ➡️ " + data.echo.resourceAvailable + "\n";
+    msg += "Price ➡️ " + data.echo.resourcePrice + "\n";
     msg += "Price unit ➡️ " + data.echo.resourcePriceUnit + "\n";
 
     console.log("Server response " + `[${timestamp()}]`);
@@ -73,6 +78,7 @@ async function onSubmit(event) {
     console.log("Description ➡️ ", data.echo.resourceDescription);
     console.log("Availability ➡️ ", data.echo.resourceAvailable);
     console.log("Price ➡️ ", data.echo.resourcePrice);
+    console.log("Price unit ➡️ ", data.echo.resourcePriceUnit);
 
     console.log("--------------------------");
     alert(msg);

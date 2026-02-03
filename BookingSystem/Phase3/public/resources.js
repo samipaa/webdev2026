@@ -136,8 +136,11 @@ function isResourceNameValid(value) {
 function isResourceDescriptionValid(value) {
   const trimmed = value.trim();
 
+  // hackhack: fixed newline with \s, otherwise the 4 extra rows are useless
+  // todo: maybe actually limit the amount of rows so the textarea doesn't become scrollable
+
   // Allowed: letters, numbers, Finnish letters, and space (based on your current regex)
-  const allowedPattern = /^[a-zA-Z0-9äöåÄÖÅ ><!\?\-\+\/\\]+$/;
+  const allowedPattern = /^[a-zA-Z0-9äöåÄÖÅ\s><!\?\-\+\/\\]+$/;
 
   const lengthValid = trimmed.length >= 10 && trimmed.length <= 50;
   const charactersValid = allowedPattern.test(trimmed);
