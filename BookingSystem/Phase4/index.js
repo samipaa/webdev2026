@@ -46,7 +46,7 @@ const resourceValidators = [
     .exists({ checkFalsy: true }).withMessage('resourceName is required')
     .isString().withMessage('resourceName must be a string')
     .trim()
-    .escape(),
+    .isLength({ min:5, max: 30 }).withMessage('resourceName must be 5-30 characters'),
 
   body('resourceDescription')
     .exists({ checkFalsy: true }).withMessage('resourceDescription is required')
@@ -55,7 +55,7 @@ const resourceValidators = [
     .isLength({ min:10, max: 50 }).withMessage('resourceDescription must be 10-50 characters'),
 
   body('resourceAvailable')
-    .exists({ checkFalsy: true }).withMessage('resourceAvailable is required')
+    .exists({ checkFalsy: false }).withMessage('resourceAvailable is required')
     .isBoolean().withMessage('resourceAvailable must be boolean')
     .toBoolean(), // coercion
 
@@ -68,7 +68,7 @@ const resourceValidators = [
     .exists({ checkFalsy: true }).withMessage('resourcePriceUnit is required')
     .isString().withMessage('resourcePriceUnit must be a string')
     .trim()
-    .isIn(['hour', 'day'])
+    .isIn(['hour', 'day', 'week', 'month'])
     .withMessage("resourcePriceUnit must be 'hour', 'day', 'week', or 'month'"),
 ];
 
@@ -108,8 +108,6 @@ app.post('/api/resources', resourceValidators, async (req, res) => {
     return res.status(400).json({ ok: false, error: 'Only create is implemented right now' });
   }
 
-  resourceAvailable = false;
-
   try {
     const insertSql = `
       INSERT INTO resources (name, description, available, price, price_unit)
@@ -117,12 +115,20 @@ app.post('/api/resources', resourceValidators, async (req, res) => {
       RETURNING id, name, description, available, price, price_unit, created_at
     `;
     const params = [
-      crypto.createHash('sha256').update(resourceName, 'utf8').digest('hex'),
+      resourceName,//crypto.createHash('sha256').update(resourceName, 'utf8').digest('hex'),
       resourceDescription,
       Boolean(resourceAvailable),
-      Number(resourcePrice)*2,
+      Number(resourcePrice),
       resourcePriceUnit
     ];
+
+    // removed resourcePrice * 2
+    // fixed priceUnit validation
+    // removed resourceAvailable = false;
+    // removed checkFalsy from resourceAvailable validation
+    // removed .escape() from resourceName validation
+    // added length validation for resourceName
+    // removed hashing of resourceName, maybe unnecessary
 
     const { rows } = await pool.query(insertSql, params);
     const created = rows[0];
