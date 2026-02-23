@@ -148,10 +148,13 @@ async function onSubmit(event) {
     // Error handling by HTTP status
     // -----------------------------------------
     if (!response.ok) {
+      //❌
+      // ⚠️
+
       // 400 = server-side validation errors (we expect errors[])
       if (response.status === 400) {
         const msg = buildValidationMessage(body?.errors);
-        showFormMessage("error", msg);
+        showFormMessage("error", `❌ ${msg}`);
         return;
       }
 
@@ -160,12 +163,12 @@ async function onSubmit(event) {
         const msg =
           body?.details ||
           "A resource with the same name already exists. Please choose another name.";
-        showFormMessage("info", `Duplicate blocked (409):\n\n${msg}`);
+        showFormMessage("info", `⚠️ ${msg}`);
         return;
       }
 
       // Other errors (500, 404, etc.)
-      showFormMessage("error", buildGenericErrorMessage(response.status, body));
+      showFormMessage("error", `❌ ${buildGenericErrorMessage(response.status, body)}`);
       return;
     }
 
@@ -178,13 +181,7 @@ async function onSubmit(event) {
       ? createdAtIso.replace("T", " ").replace("Z", "")
       : "";
 
-    const msgLines = [];
-    msgLines.push(`Name ➡️ ${body?.data?.name ?? ""}`);
-    if (createdAt) msgLines.push(`Created at ➡️ ${createdAt}`);
-    msgLines.push(`ID in database ➡️ ${body?.data?.id ?? ""}`);
-
-    const msg = msgLines.join("\n");
-    showFormMessage("success", msg);
+    showFormMessage("success", `✅ Resource \'${body?.data?.name ?? ""}\' created!`);
 
     // Notify UI layer (resources.js)
     if (typeof window.onResourceActionSuccess === "function") {
@@ -197,6 +194,6 @@ async function onSubmit(event) {
   } catch (err) {
     // Network errors, CORS issues, server unreachable, etc.
     console.error("POST error:", err);
-    showFormMessage("error", "Network error: Could not reach the server. Check your environment and try again.");
+    showFormMessage("error", "❌ Could not reach the server. Check your environment and try again.");
   }
 }

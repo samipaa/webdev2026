@@ -10,17 +10,28 @@ const router = express.Router();
 
 // POST /api/resources -> create (minimal) + duplicate check
 router.post("/", resourceValidators, async (req, res) => {
+  // Temp ID for the actor
+  const actorUserId = null;
+
   // Validate input
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
+    const pretty_err = errors.array().map((e) => ({ field: e.path, msg: e.msg }));
+    
+    // probs ok for logging vuln attempts
+
+    await logEvent({
+      actorUserId,
+      message: `FAIL: Resource creation validation error`,
+      entityType: "resource",
+      entityId: null,
+    });
+
     return res.status(400).json({
       ok: false,
-      errors: errors.array().map((e) => ({ field: e.path, msg: e.msg })),
+      errors: pretty_err,
     });
   }
-
-  // Temp ID for the actor
-  const actorUserId = null;
 
   // Read values from request body (simple approach for teaching)
   const {
@@ -72,7 +83,7 @@ router.post("/", resourceValidators, async (req, res) => {
     const resourceId = rows[0].id;
     await logEvent({
       actorUserId,
-      message: `XXXX ${resourceId} XXXX`,
+      message: `SUCCESS: Resource created (name=\'${rows[0].name}\', price=\'${rows[0].price}\', unit=\'${rows[0].price_unit}\')`,
       entityType: "resource",
       entityId: resourceId,
     });
@@ -85,7 +96,7 @@ router.post("/", resourceValidators, async (req, res) => {
       console.error(err);
       await logEvent({
         actorUserId,
-        message: `YYYY ${resourceName} YYYY`,
+        message: `FAIL: Resource already exists (name=\'${resourceName}\')`,
         entityType: "resource",
         entityId: null,
       });
@@ -98,6 +109,13 @@ router.post("/", resourceValidators, async (req, res) => {
     }
 
     console.error("DB insert failed:", err);
+    await logEvent({
+      actorUserId,
+      message: `FAIL: Resource creation database error (error=\'${err.code}\', name=\'${resourceName}\')`,
+      entityType: "resource",
+      entityId: null,
+    });
+
     return res.status(500).json({ ok: false, error: "Database error" });
   }
 });
