@@ -152,6 +152,7 @@ async function onSubmit(event) {
       // ⚠️
 
       // 400 = server-side validation errors (we expect errors[])
+      // this will only happen on purpose by the user.
       if (response.status === 400) {
         const msg = buildValidationMessage(body?.errors);
         showFormMessage("error", `❌ ${msg}`);
@@ -162,7 +163,7 @@ async function onSubmit(event) {
       if (response.status === 409) {
         const msg =
           body?.details ||
-          "A resource with the same name already exists. Please choose another name.";
+          "A resource with the same name already exists.\nTry a different name or update one of your previous resources!";
         showFormMessage("info", `⚠️ ${msg}`);
         return;
       }
