@@ -1,52 +1,124 @@
-# 1️⃣ CREATE – RResource (Sequence Diagram)
+# 1️⃣ CREATE – Resource (Sequence Diagram)
 
 ```mermaid
 sequenceDiagram
-    participant U as User (Browser)
-    participant F as Frontend (form.js and resources.js)
-    participant B as Backend (Express Route)
-    participant V as express-validator
-    participant S as Resource Service
+    participant U as Browser
+    participant F as Frontend
+    participant B as Express Route
     participant DB as PostgreSQL
 
     U->>F: Submit form
     F->>F: Client-side validation
-    F->>B: POST /api/resources (JSON)
 
-    B->>V: Validate request
-    V-->>B: Validation result
+    alt Client-side validation fail
+        F-->>U: Show error
+    else Client-side validation OK
+        F-->>B: POST /api/resources (JSON)
+        B-->>B: Validate request w/ express-validator
+        F-->>U: Show message
 
-    alt Validation fails
-        B-->>F: 400 Bad Request + errors[]
-        F-->>U: Show validation message
-    else Validation OK
-        B->>S: create Resource(data)
-        S->>DB: INSERT INTO resources
-        DB-->>S: Result / Duplicate error
+        alt Validation fail
+            B-->>F: 400 Bad Request + error
+        else Validation OK
+            B<<-->>DB: INSERT INTO resources
 
-        alt Duplicate
-            S-->>B: Duplicate detected
-            B-->>F: 409 Conflict
-            F-->>U: Show duplicate message
-        else Success
-            S-->>B: Created resource
-            B-->>F: 201 Created
-            F-->>U: Show success message
+            alt Error
+                B-->>F: 500 or 409 + message
+            else Success
+                B-->>F: 201 Created
+                F-->>U: Call loadResources()
+            end
         end
     end
 ```
 
-# 2️⃣ READ — Resource (Sequence Diagram)
+# 2️⃣ READ ALL — Resource (Sequence Diagram)
 
 ```mermaid
+sequenceDiagram
+    participant U as Browser
+    participant F as Frontend
+    participant B as Express Route
+    participant DB as PostgreSQL
+
+    U->>F: Load page (call loadResources())
+    F->>B: GET /api/resources (JSON)
+
+    B<<->>DB: SELECT * FROM resources ORDER BY created_at DESC
+
+    alt Error
+        B-->>F: 500
+        F-->>U: Render empty list & print error
+    else Result (note: ETAG seems to be automatically used by Express, status code may be 304 Not Modified)
+        F-->>U: Render resource list
+        B-->>F: 304 or (200 & resource list)
+    end
 ```
 
 # 3️⃣ UPDATE — Resource (Sequence Diagram)
 
 ```mermaid
+sequenceDiagram
+    participant U as Browser
+    participant F as Frontend
+    participant B as Express Route
+    participant DB as PostgreSQL
+
+    U->>F: Submit form
+    F->>F: Client-side validation
+
+    alt Client-side validation fail
+        F-->>U: Show error
+    else Client-side validation OK
+        F-->>B: PUT /api/resources/(ID) (JSON)
+        B-->>B: Validate request w/ express-validator
+        F-->>U: Show message
+        alt Validation fail
+            B-->>F: 400 Bad Request + error
+        else Validation OK
+            B<<-->>DB: UPDATE resources
+
+            alt Error
+                B-->>F: 409 / 404 / 500 + error
+            else Success
+                B-->>F: 200
+                F-->>U: Call loadResources()
+            end
+        end
+    end
 ```
 
 # 4️⃣ DELETE — Resource (Sequence Diagram)
 
 ```mermaid
+sequenceDiagram
+    participant U as Browser
+    participant F as Frontend
+    participant B as Express Route
+    participant DB as PostgreSQL
+
+    U->>F: Click delete
+    F->>F: Client-side validation
+
+    alt Client-side validation fail
+        F-->>U: Show error
+    else Client-side validation OK
+        F-->>U: Show message
+        F-->>B: DELETE /api/resources/(ID) (JSON)
+        B-->>B: Validate id
+
+        alt Validation fail
+            B-->>F: 400 Bad request + error
+        else Validation OK
+            B<<-->>DB: DELETE FROM resources WHERE id = $1
+
+            alt Error
+                B-->>F: 404 or 500 + error
+            else Success
+                B<<-->>DB: INSERT INTO booking_log
+                B-->>F: 204 Deleted
+                F-->>U: Call loadResources()
+            end
+        end
+    end
 ```
