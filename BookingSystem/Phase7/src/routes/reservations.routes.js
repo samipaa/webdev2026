@@ -1,15 +1,27 @@
 // src/routes/reservations.routes.js
 import express from "express";
 import pool from "../db/pool.js";
+import { validationResult } from "express-validator";
 import { logEvent } from "../services/log.service.js";
+import { reservationValidators } from "../validators/reservation.validators.js";
 
 const router = express.Router();
+
+// todo: check if userid exists
 
 /* =====================================================
    CREATE
    POST /api/reservations
 ===================================================== */
-router.post("/", async (req, res) => {
+router.post("/", reservationValidators, async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      ok: false,
+      errors: errors.array().map((e) => ({ field: e.path, msg: e.msg })),
+    });
+  }
+
   const actorUserId = null;
 
   const {
@@ -133,12 +145,20 @@ router.get("/:id", async (req, res) => {
    UPDATE
    PUT /api/reservations/:id
 ===================================================== */
-router.put("/:id", async (req, res) => {
+router.put("/:id", reservationValidators, async (req, res) => {
 
   const id = Number(req.params.id);
 
   if (isNaN(id)) {
     return res.status(400).json({ ok: false, error: "Invalid ID" });
+  }
+
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({
+      ok: false,
+      errors: errors.array().map((e) => ({ field: e.path, msg: e.msg })),
+    });
   }
 
   const actorUserId = null;
