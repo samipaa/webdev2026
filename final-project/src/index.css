@@ -39,10 +39,6 @@ p {
 	line-height: 17px;
 }
 
-img {
-  max-width: 100%;
-}
-
 #root {
   min-height: 100vh;
 }
