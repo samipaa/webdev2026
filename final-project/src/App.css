@@ -117,3 +117,39 @@ ul {
 	letter-spacing: 1pt;
   text-align: center;
 }
+
+.contact-form {
+  max-width: 560px;
+  padding: 16px 18px 18px;
+  border: 1px solid #999;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.contact-form__field input,
+.contact-form__field textarea {
+  width: 100%;
+}
+
+.contact-form__error {
+  margin: 5px 0 0;
+  color: #a30000;
+  font-weight: bold;
+}
+
+.contact-form__status {
+  margin: 0;
+  color: #00ab00;
+  font-weight: bold;
+}
+
+.response-card {
+  max-width: 560px;
+  padding: 14px 18px;
+  border: 1px solid #999;
+  background: rgba(255, 255, 255, 0.42);
+}
+
+.response-card pre {
+  overflow-x: auto;
+  background: #f4f4f4;
+}

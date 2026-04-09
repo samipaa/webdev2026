@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 
 import facebookIcon from '../../originalPage/img/facebook.png'
 import menuHeading from '../../originalPage/img/menu_01.jpg'
@@ -22,43 +23,43 @@ import yhteystiedotHover from '../../originalPage/img/menu_08-over.jpg'
 const buttons = [
   {
     alt: 'Yritys',
-    href: '#yritys',
+    to: '/',
     defaultSrc: yritys,
     hoverSrc: yritysHover,
   },
   {
     alt: 'Kansihuollot',
-    href: '#kansihuollot',
+    href: '/',
     defaultSrc: huollot,
     hoverSrc: huollotHover,
   },
   {
     alt: 'Kilpakannet',
-    href: '#kilpakannet',
+    href: '/',
     defaultSrc: kilpakannet,
     hoverSrc: kilpakannetHover,
   },
   {
     alt: 'Galleria',
-    href: '#galleria',
+    href: '/',
     defaultSrc: galleria,
     hoverSrc: galleriaHover,
   },
   {
     alt: 'Referenssit',
-    href: '#referenssit',
+    href: '/',
     defaultSrc: referenssit,
     hoverSrc: referenssitHover,
   },
   {
     alt: 'Yhteistyössä',
-    href: '#yhteistyossa',
+    href: '/',
     defaultSrc: yhteistyossa,
     hoverSrc: yhteistyossaHover,
   },
   {
     alt: 'Yhteystiedot',
-    href: '#yhteystiedot',
+    to: '/yhteystiedot',
     defaultSrc: yhteystiedot,
     hoverSrc: yhteystiedotHover,
   },
@@ -69,16 +70,16 @@ function Sidebar() {
 
   return (
     <aside className="sidebar">
-      <img className="sidebar__button" src={menuHeading} alt="" aria-hidden="true" />
+      <img className="sidebar__button" src={menuHeading} alt="" />
 
-      <nav className="sidebar__nav" aria-label="Primary">
+      <nav className="sidebar__nav">
         {buttons.map((item) => {
           const isHovered = hoveredItem === item.alt
 
           return (
-            <a
+            <Link
               key={item.alt}
-              href={item.href}
+              to={item.to}
               onFocus={() => setHoveredItem(item.alt)}
               onBlur={() => setHoveredItem(null)}
               onMouseEnter={() => setHoveredItem(item.alt)}
@@ -89,14 +90,14 @@ function Sidebar() {
                 src={isHovered ? item.hoverSrc : item.defaultSrc}
                 alt={item.alt}
               />
-            </a>
+            </Link>
           )
         })}
       </nav>
 
       <section className="sidebar__contact">
         <p className="sidebar__facebook">
-          <img src={facebookIcon} alt="" aria-hidden="true" />
+          <img src={facebookIcon} alt="" />
           <a
             href="https://www.facebook.com/pages/Kansiviritys-JKosunen/579460078763141?ref=ts&fref=ts"
             target="_blank"

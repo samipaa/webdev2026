@@ -31,14 +31,14 @@ Kansityöt vuosien kokemuksella. Kanavien muutokset, täytöt, ohjurit, lautaspi
           <ul>
             {tyot.map((item) => (
               <li key={item}>
-                <img src={dot} alt="" aria-hidden="true" />
+                <img src={dot} alt="" />
                 <span>{item}</span>
               </li>
             ))}
           </ul>
 
         <h2>
-          <img src={trophy} alt="" aria-hidden="true" />
+          <img src={trophy} alt="" />
 Koko vuoden 2008 SM-Street B-ryhmän mitallikolmikko käytti palvelujamme!
         </h2>
       </div>
