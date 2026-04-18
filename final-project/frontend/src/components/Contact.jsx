@@ -66,36 +66,29 @@ function Contact() {
     setSubmitState('submitting')
 
     try {
-      const requestBody = { ...validationResult.data, submittedAt: new Date().toISOString(), }
-
-      const response = await fetch('https://httpbin.org/post', {
+      const response = await fetch('/api/contact-requests', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(requestBody),
+        body: JSON.stringify(validationResult.data),
       })
+
+      const result = await response.json()
 
       if (!response.ok) {
         throw new Error('Virhe. Yritä uudelleen.')
       }
 
-      const result = await response.json()
-
-      setResponseData({
-        url: result.url,
-        origin: result.origin,
-        json: result.json,
-        headers: result.headers,
-      })
+      setResponseData(result)
       setSubmitState('success')
       setFormValues(initForm)
     } catch (error) {
       setSubmitState('error')
       setSubmitError(
         error instanceof Error
-        ? error.message
-        : 'Lähetys ei onnistunut. Yritä uudelleen.',
+          ? error.message
+          : 'Lähetys ei onnistunut. Yritä uudelleen.',
       )
     }
   }

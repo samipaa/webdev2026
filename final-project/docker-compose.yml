@@ -1,10 +1,51 @@
-name: advanced-web-final-project-phase1
 services:
-  react-app:
-    build: .
-    container_name: react-dev
+  frontend:
+    build:
+      context: ./frontend
+    container_name: fullstack-frontend
     ports:
-      - "5173:5173"
+      - "8080:80"
+    depends_on:
+      - api
+    networks:
+      - appnet
+
+  api:
+    build:
+      context: ./backend
+    container_name: fullstack-api
+    environment:
+      PORT: ${PORT}
+      DB_HOST: db
+      DB_PORT: ${DB_PORT}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    ports:
+      - "${PORT}:${PORT}"
+    depends_on:
+      - db
+    networks:
+      - appnet
+# ver 16 works for now, better not change it :D
+  db:
+    image: postgres:16-alpine
+    container_name: fullstack-db
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
     volumes:
-      - .:/app
-      - /app/node_modules
+      - pgdata:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d
+    networks:
+      appnet:
+        aliases:
+          - db
+
+volumes:
+  pgdata:
+
+networks:
+  appnet:
+    driver: bridge

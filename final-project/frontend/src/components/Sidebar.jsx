@@ -107,6 +107,10 @@ function Sidebar() {
           </a>
         </p>
 
+        <h1>
+          <Link to="/yhteyspyynnot">Katso yhteyspyynnöt (dev)</Link>
+        </h1>
+
         <address className="sidebar__address">
           <strong>Kansiviritys J.Kosunen</strong>
           <span>Lempeläntie 4</span>

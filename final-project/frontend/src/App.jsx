@@ -6,6 +6,7 @@ import Sidebar from './components/Sidebar.jsx'
 import Main from './components/Main.jsx'
 import Watermark from './components/Watermark.jsx'
 import Contact from './components/Contact.jsx'
+import ContactsList from './components/ContactsList.jsx'
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
            <Routes>
               <Route path="/" element={<Main />} />
               <Route path="/yhteystiedot" element={<Contact />} />
+              <Route path="/yhteyspyynnot" element={<ContactsList />} />
             </Routes>
         </main>
         <Watermark />
